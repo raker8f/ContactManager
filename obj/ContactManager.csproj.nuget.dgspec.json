@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\翁勝紘\\Desktop\\C#\\HelloWorldApp\\ContactManager\\ContactManager.csproj": {}
+    "C:\\Users\\翁勝紘\\Desktop\\C#\\ContactManager\\ContactManager.csproj": {}
   },
   "projects": {
-    "C:\\Users\\翁勝紘\\Desktop\\C#\\HelloWorldApp\\ContactManager\\ContactManager.csproj": {
+    "C:\\Users\\翁勝紘\\Desktop\\C#\\ContactManager\\ContactManager.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\翁勝紘\\Desktop\\C#\\HelloWorldApp\\ContactManager\\ContactManager.csproj",
+        "projectUniqueName": "C:\\Users\\翁勝紘\\Desktop\\C#\\ContactManager\\ContactManager.csproj",
         "projectName": "ContactManager",
-        "projectPath": "C:\\Users\\翁勝紘\\Desktop\\C#\\HelloWorldApp\\ContactManager\\ContactManager.csproj",
+        "projectPath": "C:\\Users\\翁勝紘\\Desktop\\C#\\ContactManager\\ContactManager.csproj",
         "packagesPath": "C:\\Users\\翁勝紘\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\翁勝紘\\Desktop\\C#\\HelloWorldApp\\ContactManager\\obj\\",
+        "outputPath": "C:\\Users\\翁勝紘\\Desktop\\C#\\ContactManager\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\翁勝紘\\AppData\\Roaming\\NuGet\\NuGet.Config"
