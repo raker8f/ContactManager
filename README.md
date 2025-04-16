@@ -11,7 +11,13 @@
 - 啟動時自動讀取 contacts.json
 
 ## 📁 專案結構
-ContactManager/ ├── Program.cs # 主程式 ├── Contact.cs # 聯絡人類別 ├── contacts.json # 聯絡人資料（執行時自動產生） ├── .gitignore └── README.md
+```plaintext
+ContactManager/
+├── Program.cs       # 主程式
+├── Contact.cs       # 聯絡人類別
+├── contacts.json    # 聯絡人資料（執行時自動產生）
+├── .gitignore
+└── README.md
 
 
 ## ▶️ 執行方式
