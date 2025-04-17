@@ -110,11 +110,50 @@ class Program
             return;
         }
 
-        foreach (var contact in contacts)
+        while (true)
         {
-            contact.Display();
+            Console.WriteLine("\n--- View Contacts ---");
+            Console.WriteLine("1. 顯示所有聯絡人");
+            Console.WriteLine("2. 依姓名升冪排序");
+            Console.WriteLine("3. 依姓名降冪排序");
+            Console.WriteLine("4. 搜尋姓名關鍵字");
+            Console.WriteLine("5. 返回主選單");
+            Console.Write("請選擇：");
+
+            string option = Console.ReadLine();
+            List<Contact> result = new List<Contact>();
+
+            switch (option)
+            {
+                case "1":
+                    result = contacts.ToList();
+                    break;
+                case "2":
+                    result = contacts.OrderBy(c => c.Name).ToList();
+                    break;
+                case "3":
+                    result = contacts.OrderByDescending(c => c.Name).ToList();
+                    break;
+                case "4":
+                    Console.Write("輸入搜尋關鍵字：");
+                    string keyword = Console.ReadLine();
+                    result = contacts
+                        .Where(c => c.Name.ToLower().Contains(keyword.ToLower()))
+                        .ToList();
+                    break;
+                case "5":
+                    return; // 回主選單
+                default:
+                    Console.WriteLine("無效選項，請重試");
+                    continue;
+            }
+
+            Console.WriteLine($"\n共 {result.Count} 筆聯絡人：");
+            foreach (var c in result)
+                c.Display();
         }
     }
+
 
     static void SearchContact()
     {

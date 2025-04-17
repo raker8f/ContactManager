@@ -2,14 +2,14 @@ public class Contact
 {
     public string Name {get; set;}
     public string Phone { get; set;}
-    public Contact(string name, string Phone)
+    public Contact(string name, string phone)
     {
         Name =name;
-        Phone = Phone;
+        Phone = phone;
     }
     public virtual void Display()
     {
-        Console.WriteLine($"Name: {Name}, Phone: {Phone}");
+        Console.WriteLine($"[Contact] {Name} - {Phone}");
     }
 
 }
