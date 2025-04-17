@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.IO;
 
 class Program
 {
     static List<Contact> contacts = new List<Contact>();
+    static readonly string contactFilePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts.json");
+
 
     static void Main(string[] args)
     {
-        if (File.Exists("contacts.json"))
+        if (File.Exists(contactFilePath))
         {
-            string readText = File.ReadAllText("contacts.json"); 
+            string readText = File.ReadAllText(contactFilePath); 
+            Console.WriteLine($"使用資料檔路徑：{contactFilePath}");
             var loadedContacts = JsonSerializer.Deserialize<List<Contact>>(readText);
 
             if (loadedContacts != null)
@@ -187,7 +191,7 @@ class Program
 
         try
         {
-            File.WriteAllText("contacts.json", json);
+            File.WriteAllText(contactFilePath, json);
             Console.WriteLine("聯絡人已儲存到 contacts.json");
         }
         catch (Exception ex)
