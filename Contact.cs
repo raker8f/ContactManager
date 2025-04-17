@@ -7,7 +7,7 @@ public class Contact
         Name =name;
         Phone = Phone;
     }
-    public void Display()
+    public virtual void Display()
     {
         Console.WriteLine($"Name: {Name}, Phone: {Phone}");
     }

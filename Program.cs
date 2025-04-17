@@ -10,7 +10,7 @@ class Program
     {
         if (File.Exists("contacts.json"))
         {
-            string readText = File.ReadAllText("contacts.json");  // 讀 JSON 字串
+            string readText = File.ReadAllText("contacts.json"); 
             var loadedContacts = JsonSerializer.Deserialize<List<Contact>>(readText);
 
             if (loadedContacts != null)
@@ -67,12 +67,38 @@ class Program
 
     static void AddContact()
     {
+        Console.WriteLine("Choose contact type:");
+        Console.WriteLine("1. General Contact");
+        Console.WriteLine("2. Friend Contact");
+        Console.WriteLine("3. Business Contact");
+        Console.Write("Type: ");
+        string type = Console.ReadLine();
+
         Console.Write("Enter name: ");
         string name = Console.ReadLine();
         Console.Write("Enter phone: ");
         string phone = Console.ReadLine();
 
-        contacts.Add(new Contact(name, phone));
+        switch (type)
+        {
+            case "1":
+                contacts.Add(new Contact(name, phone));
+                break;
+            case "2":
+                Console.Write("Enter nickname: ");
+                string nickname = Console.ReadLine();
+                contacts.Add(new FriendContact(name, phone, nickname));
+                break;
+            case "3":
+                Console.Write("Enter company: ");
+                string company = Console.ReadLine();
+                contacts.Add(new BusinessContact(name, phone, company));
+                break;
+            default:
+                Console.WriteLine("Unknown type.");
+                break;
+        }
+
         Console.WriteLine("Contact added.");
     }
 
