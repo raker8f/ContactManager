@@ -7,6 +7,8 @@ class Program
 {
     static List<Contact> contacts = new List<Contact>();
     static readonly string contactFilePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts.json");
+    static readonly string groupFolder = Path.Combine(Directory.GetCurrentDirectory(), "Groups");
+
     static List<Group> groups = new List<Group>();
 
 
@@ -14,7 +16,7 @@ class Program
     static void Main(string[] args)
     {
         contacts = JsonService.LoadFromJson<Contact>(contactFilePath);
-
+        LoadAllGroups();
 
         while (true)
         {
@@ -45,6 +47,7 @@ class Program
                     break;
                 case "5":
                     Storejson();
+                    SaveAllGroups();
                     return;
                 case "6":
                     GroupMenu();
@@ -244,5 +247,37 @@ class Program
             }
         }
     }
+    static void SaveAllGroups()
+    {
+        if (!Directory.Exists(groupFolder))
+            Directory.CreateDirectory(groupFolder);
+
+        foreach (var group in groups)
+        {
+            string filePath = Path.Combine(groupFolder, $"{group.Name}.json");
+            JsonService.SaveToJson<Contact>(group.Members, filePath);
+        }
+        Console.WriteLine("所有群組已儲存");
+    }
+    static void LoadAllGroups()
+    {
+        if (!Directory.Exists(groupFolder))
+            return;
+
+        string[] files = Directory.GetFiles(groupFolder, "*.json");
+
+        foreach (var file in files)
+        {
+            string groupName = Path.GetFileNameWithoutExtension(file);
+            var members = JsonService.LoadFromJson<Contact>(file);
+
+            var group = new Group(groupName);
+            group.Members = members;
+            groups.Add(group);
+        }
+
+        Console.WriteLine($"已載入 {groups.Count} 個群組");
+    }
 
 }
+
