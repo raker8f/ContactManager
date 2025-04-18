@@ -7,30 +7,13 @@ class Program
 {
     static List<Contact> contacts = new List<Contact>();
     static readonly string contactFilePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts.json");
+    static List<Group> groups = new List<Group>();
+
 
 
     static void Main(string[] args)
     {
-        if (File.Exists(contactFilePath))
-        {
-            string readText = File.ReadAllText(contactFilePath); 
-            Console.WriteLine($"使用資料檔路徑：{contactFilePath}");
-            var loadedContacts = JsonSerializer.Deserialize<List<Contact>>(readText);
-
-            if (loadedContacts != null)
-            {
-                contacts = loadedContacts; 
-                Console.WriteLine("讀取資料如下：");
-                foreach (var s in contacts)
-                {
-                    Console.WriteLine($"Name: {s.Name}, Phone: {s.Phone}");
-                }
-            }
-        }
-        else
-        {
-            Console.WriteLine("找不到 contacts.json 檔案！");
-        }
+        contacts = JsonService.LoadFromJson<Contact>(contactFilePath);
 
 
         while (true)
@@ -41,6 +24,7 @@ class Program
             Console.WriteLine("3. Search Contact by Name");
             Console.WriteLine("4. Delete Contact by Name");
             Console.WriteLine("5. Exit");
+            Console.WriteLine("6. 群組功能");
             Console.Write("Choose an option: ");
             
             string choice = Console.ReadLine();
@@ -62,6 +46,10 @@ class Program
                 case "5":
                     Storejson();
                     return;
+                case "6":
+                    GroupMenu();
+                    break;
+
                 default:
                     Console.WriteLine("Invalid option.");
                     break;
@@ -186,18 +174,75 @@ class Program
 
     static void Storejson()
     {
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        string json = JsonSerializer.Serialize(contacts,options); // 轉成 JSON 字串
-
-        try
-        {
-            File.WriteAllText(contactFilePath, json);
-            Console.WriteLine("聯絡人已儲存到 contacts.json");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("儲存失敗：" + ex.Message);
-        }
-
+        JsonService.SaveToJson<Contact>(contacts, contactFilePath);
     }
+
+    static void AddContactToGroup()
+    {
+        Console.Write("輸入群組名稱：");
+        string groupName = Console.ReadLine();
+        var group = groups.Find(g => g.Name == groupName);
+        if (group == null)
+        {
+            Console.WriteLine("找不到群組！");
+            return;
+        }
+
+        Console.Write("聯絡人姓名：");
+        string name = Console.ReadLine();
+        Console.Write("電話：");
+        string phone = Console.ReadLine();
+
+        var contact = new Contact(name, phone);
+        group.AddMember(contact);
+        Console.WriteLine($"已加入 {name} 至群組 {groupName}");
+    }
+
+
+    static void GroupMenu()
+    {
+        while (true)
+        {
+            Console.WriteLine("\n--- 群組功能 ---");
+            Console.WriteLine("1. 建立群組");
+            Console.WriteLine("2. 顯示所有群組");
+            Console.WriteLine("3. 加聯絡人到群組");
+            Console.WriteLine("4. 顯示某群組成員");
+            Console.WriteLine("5. 返回主選單");
+            Console.Write("請選擇：");
+
+            string opt = Console.ReadLine();
+            switch (opt)
+            {
+                case "1":
+                    Console.Write("請輸入群組名稱：");
+                    string name = Console.ReadLine();
+                    groups.Add(new Group(name));
+                    Console.WriteLine($"已建立群組：{name}");
+                    break;
+                case "2":
+                    foreach (var g in groups)
+                        Console.WriteLine($"📁 {g.Name}（{g.Members.Count} 人）");
+                    break;
+                case "3":
+                    AddContactToGroup();
+                    break;
+                case "4":
+                    Console.Write("輸入要查看的群組名稱：");
+                    string gname = Console.ReadLine();
+                    var target = groups.Find(g => g.Name == gname);
+                    if (target != null)
+                        target.Display();
+                    else
+                        Console.WriteLine("群組不存在。");
+                    break;
+                case "5":
+                    return;
+                default:
+                    Console.WriteLine("無效選項");
+                    break;
+            }
+        }
+    }
+
 }
