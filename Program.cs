@@ -7,8 +7,9 @@ class Program
 {
     //static List<Contact> contacts = new List<Contact>();
     static ContactService contactService;
-    static readonly string contactFilePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts.json");
-    static readonly string groupFolder = Path.Combine(Directory.GetCurrentDirectory(), "Groups");
+    static GroupService groupService;
+    //static readonly string contactFilePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts.json");
+    //static readonly string groupFolder = Path.Combine(Directory.GetCurrentDirectory(), "Groups");
 
     static List<Group> groups = new List<Group>();
 
@@ -18,8 +19,8 @@ class Program
     {
         string contactFilePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts.json");
         contactService = new ContactService(contactFilePath);
-
-        LoadAllGroups();
+        string groupFolder = Path.Combine(Directory.GetCurrentDirectory(), "Groups");
+        groupService = new GroupService(groupFolder);
 
         while (true)
         {
@@ -50,7 +51,7 @@ class Program
                     break;
                 case "5":
                     Storejson();
-                    SaveAllGroups();
+                    groupService.SaveAllGroups();
                     return;
                 case "6":
                     GroupMenu();
@@ -159,12 +160,6 @@ class Program
     {
         Console.Write("輸入群組名稱：");
         string groupName = Console.ReadLine();
-        var group = groups.Find(g => g.Name == groupName);
-        if (group == null)
-        {
-            Console.WriteLine("找不到群組！");
-            return;
-        }
 
         Console.Write("聯絡人姓名：");
         string name = Console.ReadLine();
@@ -172,8 +167,7 @@ class Program
         string phone = Console.ReadLine();
 
         var contact = new Contact(name, phone);
-        group.AddMember(contact);
-        Console.WriteLine($"已加入 {name} 至群組 {groupName}");
+        groupService.AddContactToGroup(groupName, contact);
     }
 
 
@@ -195,12 +189,12 @@ class Program
                 case "1":
                     Console.Write("請輸入群組名稱：");
                     string name = Console.ReadLine();
-                    groups.Add(new Group(name));
-                    Console.WriteLine($"已建立群組：{name}");
+                    groupService.AddGroup(name);
                     break;
                 case "2":
+                    var groups = groupService.GetAllGroups();
                     foreach (var g in groups)
-                        Console.WriteLine($"📁 {g.Name}（{g.Members.Count} 人）");
+                        Console.WriteLine($"群組：{g.Name}（{g.Members.Count} 人）");
                     break;
                 case "3":
                     AddContactToGroup();
@@ -208,51 +202,21 @@ class Program
                 case "4":
                     Console.Write("輸入要查看的群組名稱：");
                     string gname = Console.ReadLine();
-                    var target = groups.Find(g => g.Name == gname);
+                    var target = groupService.FindGroup(gname);
                     if (target != null)
                         target.Display();
                     else
                         Console.WriteLine("群組不存在。");
                     break;
+
                 case "5":
                     return;
+
                 default:
                     Console.WriteLine("無效選項");
                     break;
             }
         }
     }
-    static void SaveAllGroups()
-    {
-        if (!Directory.Exists(groupFolder))
-            Directory.CreateDirectory(groupFolder);
-
-        foreach (var group in groups)
-        {
-            string filePath = Path.Combine(groupFolder, $"{group.Name}.json");
-            JsonService.SaveToJson<Contact>(group.Members, filePath);
-        }
-        Console.WriteLine("所有群組已儲存");
-    }
-    static void LoadAllGroups()
-    {
-        if (!Directory.Exists(groupFolder))
-            return;
-
-        string[] files = Directory.GetFiles(groupFolder, "*.json");
-
-        foreach (var file in files)
-        {
-            string groupName = Path.GetFileNameWithoutExtension(file);
-            var members = JsonService.LoadFromJson<Contact>(file);
-
-            var group = new Group(groupName);
-            group.Members = members;
-            groups.Add(group);
-        }
-
-        Console.WriteLine($"已載入 {groups.Count} 個群組");
-    }
-
 }
 
