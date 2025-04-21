@@ -5,7 +5,8 @@ using System.IO;
 
 class Program
 {
-    static List<Contact> contacts = new List<Contact>();
+    //static List<Contact> contacts = new List<Contact>();
+    static ContactService contactService;
     static readonly string contactFilePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts.json");
     static readonly string groupFolder = Path.Combine(Directory.GetCurrentDirectory(), "Groups");
 
@@ -15,7 +16,9 @@ class Program
 
     static void Main(string[] args)
     {
-        contacts = JsonService.LoadFromJson<Contact>(contactFilePath);
+        string contactFilePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts.json");
+        contactService = new ContactService(contactFilePath);
+
         LoadAllGroups();
 
         while (true)
@@ -62,44 +65,18 @@ class Program
 
     static void AddContact()
     {
-        Console.WriteLine("Choose contact type:");
-        Console.WriteLine("1. General Contact");
-        Console.WriteLine("2. Friend Contact");
-        Console.WriteLine("3. Business Contact");
-        Console.Write("Type: ");
-        string type = Console.ReadLine();
-
         Console.Write("Enter name: ");
         string name = Console.ReadLine();
         Console.Write("Enter phone: ");
         string phone = Console.ReadLine();
 
-        switch (type)
-        {
-            case "1":
-                contacts.Add(new Contact(name, phone));
-                break;
-            case "2":
-                Console.Write("Enter nickname: ");
-                string nickname = Console.ReadLine();
-                contacts.Add(new FriendContact(name, phone, nickname));
-                break;
-            case "3":
-                Console.Write("Enter company: ");
-                string company = Console.ReadLine();
-                contacts.Add(new BusinessContact(name, phone, company));
-                break;
-            default:
-                Console.WriteLine("Unknown type.");
-                break;
-        }
-
-        Console.WriteLine("Contact added.");
+        contactService.AddContact(new Contact(name, phone));
     }
 
     static void ViewContacts()
     {
-        if (contacts.Count == 0)
+         var all = contactService.GetAllContacts();
+        if (all.Count == 0)
         {
             Console.WriteLine("No contacts.");
             return;
@@ -121,25 +98,23 @@ class Program
             switch (option)
             {
                 case "1":
-                    result = contacts.ToList();
+                    result = all.ToList();
                     break;
                 case "2":
-                    result = contacts.OrderBy(c => c.Name).ToList();
+                    result = all.OrderBy(c => c.Name).ToList();
                     break;
                 case "3":
-                    result = contacts.OrderByDescending(c => c.Name).ToList();
+                    result = all.OrderByDescending(c => c.Name).ToList();
                     break;
                 case "4":
                     Console.Write("輸入搜尋關鍵字：");
                     string keyword = Console.ReadLine();
-                    result = contacts
-                        .Where(c => c.Name.ToLower().Contains(keyword.ToLower()))
-                        .ToList();
+                    result = contactService.Search(keyword);
                     break;
                 case "5":
-                    return; // 回主選單
+                    return;
                 default:
-                    Console.WriteLine("無效選項，請重試");
+                    Console.WriteLine("無效選項");
                     continue;
             }
 
@@ -154,7 +129,7 @@ class Program
     {
         Console.Write("Enter name to search: ");
         string name = Console.ReadLine();
-        var found = contacts.FindAll(c => c.Name.ToLower().Contains(name.ToLower()));
+        var found = contactService.Search(name);
 
         if (found.Count == 0)
         {
@@ -171,13 +146,13 @@ class Program
     {
         Console.Write("Enter name to delete: ");
         string name = Console.ReadLine();
-        int removed = contacts.RemoveAll(c => c.Name.ToLower().Contains(name.ToLower()));
+        int removed = contactService.Delete(name);
         Console.WriteLine($"{removed} contact(s) deleted.");
     }
 
     static void Storejson()
     {
-        JsonService.SaveToJson<Contact>(contacts, contactFilePath);
+        contactService.SaveContacts();
     }
 
     static void AddContactToGroup()
